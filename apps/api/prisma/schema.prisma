@@ -1,0 +1,574 @@
+// ─── PRISMA SCHEMA ─── Hotel Capital AI ──────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── INVESTOR INTELLIGENCE ───────────────────────────────────
+
+model Investor {
+  id                    String              @id @default(cuid())
+  firstName             String
+  lastName              String
+  email                 String              @unique
+  phone                 String?
+  company               String?
+  title                 String?
+  linkedinUrl           String?
+
+  // Accreditation
+  accreditedStatus      AccreditedStatus    @default(UNVERIFIED)
+  accreditedVerifiedAt  DateTime?
+  accreditedMethod      String?
+
+  // Investment Profile
+  checkSizeMin          Decimal?            @db.Decimal(15, 2)
+  checkSizeMax          Decimal?            @db.Decimal(15, 2)
+  preferredReturnMin    Decimal?            @db.Decimal(5, 2)
+  preferredReturnMax    Decimal?            @db.Decimal(5, 2)
+  riskProfile           RiskProfile?
+  assetClassPrefs       String[]
+  geographyPrefs        String[]
+  hospitalityExperience HospitalityExp      @default(NONE)
+  priorHotelInvestments Int                 @default(0)
+  totalFundCommitments  Decimal?            @db.Decimal(15, 2)
+
+  // Scoring
+  qualityScore          Int                 @default(0)
+  fitScore              Int                 @default(0)
+  engagementScore       Int                 @default(0)
+  lastScoredAt          DateTime?
+
+  // Source & Compliance
+  source                LeadSource
+  sourceDetail          String?
+  optedIn               Boolean             @default(false)
+  optInDate             DateTime?
+  optedOut              Boolean             @default(false)
+  optOutDate            DateTime?
+  doNotContact          Boolean             @default(false)
+  priorRelationship     Boolean             @default(false)
+  priorRelationshipNote String?
+
+  // Metadata
+  tags                  String[]
+  notes                 String?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  // Relations
+  dealInterests         DealInvestor[]
+  outreachSequences     OutreachEnrollment[]
+  voiceCalls            VoiceCall[]
+  meetings              Meeting[]
+  auditLogs             AuditLog[]
+  commitments           Commitment[]
+  activities            Activity[]
+  documents             InvestorDocument[]
+
+  @@index([qualityScore])
+  @@index([accreditedStatus])
+  @@index([optedOut])
+}
+
+model InvestorDocument {
+  id          String   @id @default(cuid())
+  investorId  String
+  investor    Investor @relation(fields: [investorId], references: [id])
+  type        DocType
+  s3Key       String
+  uploadedAt  DateTime @default(now())
+}
+
+// ─── DEAL MANAGEMENT ─────────────────────────────────────────
+
+model Deal {
+  id                   String       @id @default(cuid())
+  name                 String
+  propertyName         String
+  propertyAddress      String
+  city                 String
+  state                String
+  market               String
+  status               DealStatus   @default(SOURCING)
+
+  // Financials
+  acquisitionPrice     Decimal      @db.Decimal(15, 2)
+  totalRaise           Decimal      @db.Decimal(15, 2)
+  raisedToDate         Decimal      @default(0) @db.Decimal(15, 2)
+  minimumInvestment    Decimal      @db.Decimal(15, 2)
+  targetIRR            Decimal?     @db.Decimal(5, 2)
+  targetEquityMultiple Decimal?     @db.Decimal(5, 2)
+  targetCashOnCash     Decimal?     @db.Decimal(5, 2)
+  holdPeriod           Int?
+
+  // Property Details
+  propertyType         HotelType
+  roomCount            Int?
+  brand                String?
+  starRating           Decimal?     @db.Decimal(2, 1)
+  renovationBudget     Decimal?     @db.Decimal(15, 2)
+  renovationThesis     String?      @db.Text
+
+  // Market Data
+  strRevPAR            Decimal?     @db.Decimal(10, 2)
+  strOccupancy         Decimal?     @db.Decimal(5, 2)
+  strADR               Decimal?     @db.Decimal(10, 2)
+  marketGrowthRate     Decimal?     @db.Decimal(5, 2)
+  exitAssumptions      String?      @db.Text
+  proFormaS3Key        String?
+
+  // Compliance
+  offeringType         OfferingType @default(REG_D_506B)
+  maxInvestors         Int?
+  ppmS3Key             String?
+
+  // Raise Timeline
+  raiseStartDate       DateTime?
+  raiseTargetClose     DateTime?
+  raiseActualClose     DateTime?
+
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  // Relations
+  investors            DealInvestor[]
+  outreachSequences    OutreachSequence[]
+  commitments          Commitment[]
+  meetings             Meeting[]
+
+  @@index([status])
+}
+
+model DealInvestor {
+  id         String             @id @default(cuid())
+  dealId     String
+  deal       Deal               @relation(fields: [dealId], references: [id])
+  investorId String
+  investor   Investor           @relation(fields: [investorId], references: [id])
+  status     InvestorDealStatus @default(IDENTIFIED)
+  fitScore   Int                @default(0)
+  priority   Int                @default(0)
+  assignedTo String?
+  notes      String?
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  @@unique([dealId, investorId])
+  @@index([status])
+}
+
+// ─── OUTREACH ENGINE ─────────────────────────────────────────
+
+model OutreachSequence {
+  id                 String              @id @default(cuid())
+  dealId             String
+  deal               Deal                @relation(fields: [dealId], references: [id])
+  name               String
+  type               SequenceType        @default(EMAIL)
+  status             SequenceStatus      @default(DRAFT)
+  complianceApproved Boolean             @default(false)
+  complianceApprovedBy String?
+  complianceApprovedAt DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  steps              OutreachStep[]
+  enrollments        OutreachEnrollment[]
+}
+
+model OutreachStep {
+  id               String           @id @default(cuid())
+  sequenceId       String
+  sequence         OutreachSequence @relation(fields: [sequenceId], references: [id])
+  stepOrder        Int
+  channel          Channel
+  delayDays        Int              @default(0)
+  templateSubject  String?
+  templateBody     String?          @db.Text
+  aiPrompt         String?          @db.Text
+  complianceFooter String?          @db.Text
+  createdAt        DateTime         @default(now())
+}
+
+model OutreachEnrollment {
+  id           String             @id @default(cuid())
+  sequenceId   String
+  sequence     OutreachSequence   @relation(fields: [sequenceId], references: [id])
+  investorId   String
+  investor     Investor           @relation(fields: [investorId], references: [id])
+  currentStep  Int                @default(0)
+  status       EnrollmentStatus   @default(ACTIVE)
+  pausedReason String?
+  enrolledAt   DateTime           @default(now())
+  completedAt  DateTime?
+  events       OutreachEvent[]
+
+  @@unique([sequenceId, investorId])
+}
+
+model OutreachEvent {
+  id           String             @id @default(cuid())
+  enrollmentId String
+  enrollment   OutreachEnrollment @relation(fields: [enrollmentId], references: [id])
+  stepOrder    Int
+  eventType    OutreachEventType
+  metadata     Json?
+  occurredAt   DateTime           @default(now())
+
+  @@index([eventType])
+}
+
+// ─── VOICE AI ────────────────────────────────────────────────
+
+model VoiceCall {
+  id                  String        @id @default(cuid())
+  investorId          String
+  investor            Investor      @relation(fields: [investorId], references: [id])
+  direction           CallDirection
+  twilioCallSid       String?       @unique
+  status              CallStatus    @default(INITIATED)
+  duration            Int?
+  recordingUrl        String?
+  transcriptS3Key     String?
+
+  // Qualification Results
+  accreditedConfirmed Boolean?
+  statedCheckSize     Decimal?      @db.Decimal(15, 2)
+  returnExpectation   String?
+  hospitalityExp      String?
+  investorSentiment   String?
+  qualificationScore  Int?
+  qualifiedForBooking Boolean       @default(false)
+
+  // Compliance
+  consentRecorded     Boolean       @default(false)
+  disclaimerPlayed    Boolean       @default(false)
+
+  startedAt           DateTime      @default(now())
+  endedAt             DateTime?
+
+  @@index([investorId])
+}
+
+// ─── MEETINGS & COMMITMENTS ──────────────────────────────────
+
+model Meeting {
+  id          String        @id @default(cuid())
+  investorId  String
+  investor    Investor      @relation(fields: [investorId], references: [id])
+  dealId      String?
+  deal        Deal?         @relation(fields: [dealId], references: [id])
+  assignedTo  String
+  scheduledAt DateTime
+  duration    Int           @default(30)
+  status      MeetingStatus @default(SCHEDULED)
+  meetingType MeetingType   @default(INTRO)
+  briefS3Key  String?
+  notes       String?       @db.Text
+  outcome     String?
+  createdAt   DateTime      @default(now())
+}
+
+model Commitment {
+  id         String         @id @default(cuid())
+  investorId String
+  investor   Investor       @relation(fields: [investorId], references: [id])
+  dealId     String
+  deal       Deal           @relation(fields: [dealId], references: [id])
+  type       CommitmentType
+  amount     Decimal        @db.Decimal(15, 2)
+  date       DateTime       @default(now())
+  notes      String?
+
+  @@index([dealId])
+}
+
+// ─── DISPOSITION MODE ────────────────────────────────────────
+
+model Buyer {
+  id               String            @id @default(cuid())
+  companyName      String
+  contactName      String
+  email            String
+  phone            String?
+  buyerType        BuyerType
+  acquisitionMin   Decimal?          @db.Decimal(15, 2)
+  acquisitionMax   Decimal?          @db.Decimal(15, 2)
+  preferredMarkets String[]
+  preferredBrands  String[]
+  trackRecord      Int?
+  tags             String[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  lois             LOI[]
+  engagements      BuyerEngagement[]
+}
+
+model LOI {
+  id          String    @id @default(cuid())
+  buyerId     String
+  buyer       Buyer     @relation(fields: [buyerId], references: [id])
+  dealName    String
+  offerPrice  Decimal   @db.Decimal(15, 2)
+  terms       String?   @db.Text
+  submittedAt DateTime  @default(now())
+  status      LOIStatus @default(RECEIVED)
+  expiresAt   DateTime?
+}
+
+model BuyerEngagement {
+  id         String   @id @default(cuid())
+  buyerId    String
+  buyer      Buyer    @relation(fields: [buyerId], references: [id])
+  eventType  String
+  metadata   Json?
+  occurredAt DateTime @default(now())
+
+  @@index([buyerId])
+}
+
+// ─── COMPLIANCE & AUDIT ──────────────────────────────────────
+
+model AuditLog {
+  id         String    @id @default(cuid())
+  userId     String?
+  investorId String?
+  investor   Investor? @relation(fields: [investorId], references: [id])
+  action     String
+  entity     String
+  entityId   String
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
+
+model ComplianceRule {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  enabled     Boolean  @default(true)
+  config      Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Activity {
+  id          String   @id @default(cuid())
+  investorId  String
+  investor    Investor @relation(fields: [investorId], references: [id])
+  type        String
+  description String
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([investorId, createdAt])
+}
+
+// ─── USER / AUTH ─────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         UserRole @default(ANALYST)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── ENUMS ───────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  ANALYST
+  VIEWER
+}
+
+enum AccreditedStatus {
+  UNVERIFIED
+  SELF_CERTIFIED
+  THIRD_PARTY_VERIFIED
+  INSTITUTIONAL
+  NOT_ACCREDITED
+}
+
+enum RiskProfile {
+  CONSERVATIVE
+  MODERATE
+  AGGRESSIVE
+}
+
+enum HospitalityExp {
+  NONE
+  PASSIVE_LP
+  ACTIVE_LP
+  OPERATOR
+  DEVELOPER
+}
+
+enum LeadSource {
+  REFERRAL
+  LINKEDIN
+  CONFERENCE
+  WEBSITE
+  PURCHASED_LIST
+  PRIOR_INVESTOR
+  INBOUND_CALL
+  OTHER
+}
+
+enum DealStatus {
+  SOURCING
+  UNDER_CONTRACT
+  RAISING
+  FULLY_FUNDED
+  CLOSED
+  OPERATING
+  DISPOSITION
+  REALIZED
+}
+
+enum HotelType {
+  SELECT_SERVICE
+  FULL_SERVICE
+  EXTENDED_STAY
+  RESORT
+  BOUTIQUE
+  LIFESTYLE
+  CONVENTION
+}
+
+enum OfferingType {
+  REG_D_506B
+  REG_D_506C
+}
+
+enum InvestorDealStatus {
+  IDENTIFIED
+  CONTACTED
+  ENGAGED
+  QUALIFIED
+  MEETING_SCHEDULED
+  MEETING_COMPLETED
+  SOFT_COMMIT
+  HARD_COMMIT
+  FUNDED
+  DECLINED
+  DISQUALIFIED
+}
+
+enum SequenceType {
+  EMAIL
+  MULTI_CHANNEL
+}
+
+enum SequenceStatus {
+  DRAFT
+  COMPLIANCE_REVIEW
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+enum Channel {
+  EMAIL
+  VOICE
+  SMS
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  REPLIED
+  OPTED_OUT
+  BOUNCED
+}
+
+enum OutreachEventType {
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  REPLIED
+  BOUNCED
+  UNSUBSCRIBED
+}
+
+enum CallDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum CallStatus {
+  INITIATED
+  RINGING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  NO_ANSWER
+  BUSY
+  VOICEMAIL
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum MeetingType {
+  INTRO
+  DEEP_DIVE
+  FOLLOW_UP
+  CLOSING
+}
+
+enum CommitmentType {
+  SOFT_COMMIT
+  HARD_COMMIT
+  FUNDED
+}
+
+enum BuyerType {
+  REIT
+  PE_FUND
+  FAMILY_OFFICE
+  OPERATOR
+  INDIVIDUAL
+}
+
+enum LOIStatus {
+  RECEIVED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  COUNTERED
+}
+
+enum DocType {
+  SUBSCRIPTION_AGREEMENT
+  ACCREDITATION_LETTER
+  W9
+  OPERATING_AGREEMENT
+  SIDE_LETTER
+  OTHER
+}
