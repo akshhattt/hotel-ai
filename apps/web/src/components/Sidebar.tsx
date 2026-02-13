@@ -23,11 +23,11 @@ export default function Sidebar() {
             <div className="px-6 py-6 border-b border-white/5">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-accent-cyan flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">H</span>
+                        <span className="text-white font-bold text-lg">P</span>
                     </div>
                     <div>
-                        <h1 className="text-sm font-bold text-white tracking-tight">Hotel Capital</h1>
-                        <p className="text-[10px] font-medium text-brand-400 uppercase tracking-widest">AI Platform</p>
+                        <h1 className="text-sm font-bold text-white tracking-tight">Peachtree Group</h1>
+                        <p className="text-[10px] font-medium text-brand-400 uppercase tracking-widest">Capital AI</p>
                     </div>
                 </div>
             </div>

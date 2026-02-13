@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'Hotel Capital AI — Investor Acquisition Platform',
-    description: 'AI-driven investor acquisition and qualification infrastructure for hospitality private equity',
+    title: 'Peachtree Group — Capital AI Platform',
+    description: 'AI-driven investor acquisition and capital raise automation for Peachtree Group',
 };
 
 export default function RootLayout({

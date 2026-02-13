@@ -42,7 +42,7 @@ const funnelData = [
 
 const dealPipelines = [
     {
-        name: 'Marriott Select — Tampa',
+        name: 'Hampton Inn & Suites — Kahului, HI',
         totalRaise: 8500000,
         raised: 6630000,
         progress: 78,
@@ -52,7 +52,7 @@ const dealPipelines = [
         status: 'RAISING',
     },
     {
-        name: 'Hilton Garden — Nashville',
+        name: 'Hilton Garden Inn — Phoenix, AZ',
         totalRaise: 12000000,
         raised: 5040000,
         progress: 42,
@@ -62,7 +62,7 @@ const dealPipelines = [
         status: 'RAISING',
     },
     {
-        name: 'Boutique Independent — ATX',
+        name: 'Home2 Suites — Sacramento, CA',
         totalRaise: 6000000,
         raised: 1080000,
         progress: 18,
@@ -94,8 +94,8 @@ export default function DashboardPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white tracking-tight">Capital Velocity Dashboard</h1>
-                    <p className="text-sm text-gray-500 mt-1">Real-time investor acquisition &amp; raise performance</p>
+                    <h1 className="text-2xl font-bold text-white tracking-tight">Peachtree Capital Velocity</h1>
+                    <p className="text-sm text-gray-500 mt-1">Real-time investor acquisition & raise performance</p>
                 </div>
                 <div className="flex items-center gap-3">
                     <span className="badge-emerald">
@@ -104,9 +104,9 @@ export default function DashboardPage() {
                     </span>
                     <select className="bg-surface-3 border border-white/10 rounded-xl px-3 py-2 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/50">
                         <option>All Deals</option>
-                        <option>Marriott Select — Tampa</option>
-                        <option>Hilton Garden — Nashville</option>
-                        <option>Boutique Independent — ATX</option>
+                        <option>Hampton Inn & Suites — Kahului, HI</option>
+                        <option>Hilton Garden Inn — Phoenix, AZ</option>
+                        <option>Home2 Suites — Sacramento, CA</option>
                     </select>
                 </div>
             </div>

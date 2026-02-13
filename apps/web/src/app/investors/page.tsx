@@ -3,13 +3,13 @@
 import React, { useState } from 'react';
 
 const investors = [
-    { id: '1', name: 'Robert Chen', company: 'Pacific Coast Capital', email: 'rchen@pcc.com', score: 92, tier: 'A+', accredited: 'THIRD_PARTY_VERIFIED', checkSize: '$500K-$1M', geography: 'West Coast', experience: 'ACTIVE_LP', priorDeals: 4, status: 'MEETING_COMPLETED', activeDeal: 'Marriott Select — Tampa' },
-    { id: '2', name: 'Sarah Mitchell', company: 'Greenfield Family Office', email: 'smitchell@gfo.com', score: 87, tier: 'A+', accredited: 'INSTITUTIONAL', checkSize: '$1M-$2.5M', geography: 'Southeast', experience: 'PASSIVE_LP', priorDeals: 2, status: 'SOFT_COMMIT', activeDeal: 'Hilton Garden — Nashville' },
-    { id: '3', name: 'James Park', company: 'Park Hospitality Group', email: 'jpark@phg.com', score: 81, tier: 'A', accredited: 'SELF_CERTIFIED', checkSize: '$250K-$500K', geography: 'Sun Belt', experience: 'OPERATOR', priorDeals: 8, status: 'QUALIFIED', activeDeal: 'Boutique Independent — ATX' },
-    { id: '4', name: 'Michelle Torres', company: 'Torres Capital Partners', email: 'mt@tcp.com', score: 74, tier: 'A', accredited: 'THIRD_PARTY_VERIFIED', checkSize: '$500K-$1M', geography: 'National', experience: 'ACTIVE_LP', priorDeals: 3, status: 'MEETING_SCHEDULED', activeDeal: 'Marriott Select — Tampa' },
-    { id: '5', name: 'David Wong', company: 'Wong Investments LLC', email: 'dwong@wi.com', score: 68, tier: 'B', accredited: 'SELF_CERTIFIED', checkSize: '$100K-$250K', geography: 'West Coast', experience: 'PASSIVE_LP', priorDeals: 1, status: 'ENGAGED', activeDeal: 'Hilton Garden — Nashville' },
-    { id: '6', name: 'Lisa Carpenter', company: 'Carpenter REIT Advisory', email: 'lc@cra.com', score: 62, tier: 'B', accredited: 'UNVERIFIED', checkSize: '$250K-$500K', geography: 'Midwest', experience: 'NONE', priorDeals: 0, status: 'CONTACTED', activeDeal: 'Boutique Independent — ATX' },
-    { id: '7', name: 'Andrew Steele', company: 'Steele Ventures', email: 'as@sv.com', score: 55, tier: 'B', accredited: 'SELF_CERTIFIED', checkSize: '$100K-$250K', geography: 'Northeast', experience: 'PASSIVE_LP', priorDeals: 1, status: 'ENGAGED', activeDeal: 'Marriott Select — Tampa' },
+    { id: '1', name: 'Robert Chen', company: 'Pacific Coast Capital', email: 'rchen@pcc.com', score: 92, tier: 'A+', accredited: 'THIRD_PARTY_VERIFIED', checkSize: '$500K-$1M', geography: 'West Coast', experience: 'ACTIVE_LP', priorDeals: 4, status: 'MEETING_COMPLETED', activeDeal: 'Hampton Inn & Suites — Kahului, HI' },
+    { id: '2', name: 'Sarah Mitchell', company: 'Greenfield Family Office', email: 'smitchell@gfo.com', score: 87, tier: 'A+', accredited: 'INSTITUTIONAL', checkSize: '$1M-$2.5M', geography: 'Southeast', experience: 'PASSIVE_LP', priorDeals: 2, status: 'SOFT_COMMIT', activeDeal: 'Hilton Garden Inn — Phoenix, AZ' },
+    { id: '3', name: 'James Park', company: 'Park Hospitality Group', email: 'jpark@phg.com', score: 81, tier: 'A', accredited: 'SELF_CERTIFIED', checkSize: '$250K-$500K', geography: 'Sun Belt', experience: 'OPERATOR', priorDeals: 8, status: 'QUALIFIED', activeDeal: 'Home2 Suites — Sacramento, CA' },
+    { id: '4', name: 'Michelle Torres', company: 'Torres Capital Partners', email: 'mt@tcp.com', score: 74, tier: 'A', accredited: 'THIRD_PARTY_VERIFIED', checkSize: '$500K-$1M', geography: 'National', experience: 'ACTIVE_LP', priorDeals: 3, status: 'MEETING_SCHEDULED', activeDeal: 'Hampton Inn & Suites — Kahului, HI' },
+    { id: '5', name: 'David Wong', company: 'Wong Investments LLC', email: 'dwong@wi.com', score: 68, tier: 'B', accredited: 'SELF_CERTIFIED', checkSize: '$100K-$250K', geography: 'West Coast', experience: 'PASSIVE_LP', priorDeals: 1, status: 'ENGAGED', activeDeal: 'Hilton Garden Inn — Phoenix, AZ' },
+    { id: '6', name: 'Lisa Carpenter', company: 'Carpenter REIT Advisory', email: 'lc@cra.com', score: 62, tier: 'B', accredited: 'UNVERIFIED', checkSize: '$250K-$500K', geography: 'Midwest', experience: 'NONE', priorDeals: 0, status: 'CONTACTED', activeDeal: 'Home2 Suites — Sacramento, CA' },
+    { id: '7', name: 'Andrew Steele', company: 'Steele Ventures', email: 'as@sv.com', score: 55, tier: 'B', accredited: 'SELF_CERTIFIED', checkSize: '$100K-$250K', geography: 'Northeast', experience: 'PASSIVE_LP', priorDeals: 1, status: 'ENGAGED', activeDeal: 'Hampton Inn & Suites — Kahului, HI' },
     { id: '8', name: 'Karen Williams', company: 'Williams Family Trust', email: 'kw@wft.com', score: 41, tier: 'C', accredited: 'UNVERIFIED', checkSize: '$50K-$100K', geography: 'Southeast', experience: 'NONE', priorDeals: 0, status: 'IDENTIFIED', activeDeal: '-' },
 ];
 
@@ -69,8 +69,8 @@ export default function InvestorsPage() {
                             key={tier}
                             onClick={() => setFilterTier(tier)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${filterTier === tier
-                                    ? 'bg-brand-600 text-white'
-                                    : 'bg-surface-3 text-gray-400 hover:text-white'
+                                ? 'bg-brand-600 text-white'
+                                : 'bg-surface-3 text-gray-400 hover:text-white'
                                 }`}
                         >
                             {tier === 'all' ? 'All' : tier}

@@ -41,7 +41,7 @@ const auditLog = [
         event: 'Email Campaign Compliance Check',
         actor: 'Compliance Engine',
         investor: 'N/A',
-        detail: 'Batch scan of "Nashville Hilton Family Office Intro" campaign. All 534 emails checked for solicitation language. No violations.',
+        detail: 'Batch scan of "Phoenix Hilton Family Office Intro" campaign. All 534 emails checked for solicitation language. No violations.',
         category: 'AUDIT',
         status: 'COMPLIANT',
     },

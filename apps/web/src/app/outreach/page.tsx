@@ -7,8 +7,8 @@ import React, { useState } from 'react';
 const campaigns = [
     {
         id: '1',
-        name: 'Marriott Select Tampa — HNW Sequence',
-        deal: 'Marriott Select — Tampa',
+        name: 'Hampton Inn Kahului — HNW Sequence',
+        deal: 'Hampton Inn & Suites — Kahului, HI',
         status: 'ACTIVE',
         type: 'Email',
         sent: 842,
@@ -19,8 +19,8 @@ const campaigns = [
     },
     {
         id: '2',
-        name: 'Nashville Hilton — Family Office Intro',
-        deal: 'Hilton Garden — Nashville',
+        name: 'Phoenix Hilton — Family Office Intro',
+        deal: 'Hilton Garden Inn — Phoenix, AZ',
         status: 'ACTIVE',
         type: 'Email',
         sent: 534,
@@ -44,7 +44,7 @@ const campaigns = [
     {
         id: '4',
         name: 'Austin Boutique — Accredited Investor',
-        deal: 'Boutique Independent — Austin',
+        deal: 'Home2 Suites — Sacramento, CA',
         status: 'PAUSED',
         type: 'Email',
         sent: 212,
@@ -68,12 +68,12 @@ const campaigns = [
 ];
 
 const recentEmails = [
-    { to: 'j.mitchell@meridianfamily.com', subject: 'Exclusive: Tampa Select-Service Opportunity', status: 'Opened', time: '2:15 PM' },
-    { to: 'sarah.chen@bluewaterpe.com', subject: 'Re: Nashville Hilton Garden Investment Deck', status: 'Replied', time: '1:42 PM' },
+    { to: 'j.mitchell@meridianfamily.com', subject: 'Exclusive: Kahului Select-Service Opportunity', status: 'Opened', time: '2:15 PM' },
+    { to: 'sarah.chen@bluewaterpe.com', subject: 'Re: Phoenix Hilton Garden Inn Investment Deck', status: 'Replied', time: '1:42 PM' },
     { to: 'r.davidson@highbridgecap.com', subject: 'Peachtree Group — Q1 Hotel Portfolio Update', status: 'Sent', time: '12:30 PM' },
-    { to: 'alex.kumar@pinewealthmgmt.com', subject: 'Meeting Confirmed: Marriott Tampa Call', status: 'Replied', time: '11:18 AM' },
+    { to: 'alex.kumar@pinewealthmgmt.com', subject: 'Meeting Confirmed: Kahului Hampton Call', status: 'Replied', time: '11:18 AM' },
     { to: 'lisa.park@summitfamilyoffice.com', subject: 'Tax-Advantaged Hotel Investment (1031/DST)', status: 'Opened', time: '10:05 AM' },
-    { to: 'w.torres@eaglerockventures.com', subject: 'Follow-up: Nashville Hotel Development', status: 'Bounced', time: '9:30 AM' },
+    { to: 'w.torres@eaglerockventures.com', subject: 'Follow-up: Phoenix Hotel Development', status: 'Bounced', time: '9:30 AM' },
 ];
 
 const statusColors: Record<string, string> = {
